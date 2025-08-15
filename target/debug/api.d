@@ -1,0 +1,1 @@
+C:\Users\mateu\Desktop\Projects\agenda_uai_api\target\debug\api.exe: C:\Users\mateu\Desktop\Projects\agenda_uai_api\api\src\main.rs C:\Users\mateu\Desktop\Projects\agenda_uai_api\api\src\response\mod.rs C:\Users\mateu\Desktop\Projects\agenda_uai_api\domain\src\lib.rs C:\Users\mateu\Desktop\Projects\agenda_uai_api\infra\src\lib.rs
