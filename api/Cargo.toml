@@ -10,3 +10,4 @@ infra  = { path = "../infra" }
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.142"
 tokio = { version = "1.47.1", features = ["full"] }
+core_types = { path = "../core_types" }

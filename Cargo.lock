@@ -22,6 +22,7 @@ name = "api"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "core_types",
  "domain",
  "infra",
  "serde",
@@ -121,6 +122,13 @@ name = "cfg-if"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9555578bc9e57714c812a1f84e4fc5b4d21fcb063490c624de019f7464c91268"
+
+[[package]]
+name = "core_types"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
 
 [[package]]
 name = "domain"
