@@ -1,0 +1,32 @@
+name: CI - DB smoke
+
+on:
+  push:
+    branches: [ dev-dba ]     # troque pelo nome da sua branch
+  pull_request:
+    branches: [ main ]         # roda quando abrir PR para a main
+  workflow_dispatch:            # permite rodar manualmente na UI
+
+jobs:
+  db-smoke:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use .env.example como .env
+        run: cp .env.example .env
+
+      - name: Deixar scripts executáveis
+        run: chmod +x scripts/deploy.sh scripts/db_check.sh
+
+      - name: Subir stack (sem testes aqui)
+        run: ./scripts/deploy.sh --no-tests
+
+      - name: Rodar smoke tests do DB
+        run: ./scripts/db_check.sh
+
+      - name: Teardown
+        if: always()
+        run: docker compose down -v
