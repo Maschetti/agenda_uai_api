@@ -4,7 +4,11 @@ use std::fmt::{Display, Formatter};
 use crate::ErrorMessage;
 
 #[derive(Debug, Clone, Serialize)]
-pub enum Status { A, I, R }
+pub enum Status {
+    A,
+    I,
+    R,
+}
 
 impl TryFrom<String> for Status {
     type Error = ErrorMessage;

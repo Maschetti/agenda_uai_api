@@ -66,7 +66,9 @@ impl<'de> Deserialize<'de> for Cpf {
 
 impl Deref for Cpf {
     type Target = str;
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl Display for Cpf {

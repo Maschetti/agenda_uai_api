@@ -59,11 +59,14 @@ impl Name {
             return Err(ErrorMessage::EmptyField { field: "nome" });
         }
         if len > 250 {
-            return Err(ErrorMessage::TooLong { field: "nome", max: 250 });
+            return Err(ErrorMessage::TooLong {
+                field: "nome",
+                max: 250,
+            });
         }
-        let ok = s.chars().all(|c|
-            c.is_alphabetic() || c == ' ' || c == '\'' || c == '-' || c == '.'
-        );
+        let ok = s
+            .chars()
+            .all(|c| c.is_alphabetic() || c == ' ' || c == '\'' || c == '-' || c == '.');
         if !ok {
             return Err(ErrorMessage::InvalidChar { field: "nome" });
         }
@@ -90,7 +93,9 @@ impl<'de> Deserialize<'de> for Name {
 
 impl Deref for Name {
     type Target = str;
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl Display for Name {

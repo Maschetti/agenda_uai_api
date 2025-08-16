@@ -1,5 +1,5 @@
-use std::{str::FromStr};
 use serde::{Deserialize, Deserializer, Serialize};
+use std::str::FromStr;
 
 use crate::ErrorMessage;
 
@@ -24,7 +24,10 @@ impl Email {
         const MIN_TLD: usize = 2;
 
         if clean.len() < MIN_LEN {
-            return Err(ErrorMessage::TooShort { field: "e-mail", min: MIN_LEN });
+            return Err(ErrorMessage::TooShort {
+                field: "e-mail",
+                min: MIN_LEN,
+            });
         }
         if !Self::is_ascii_basic(clean) {
             // se preferir uma variante específica (e.g. NonAscii { field }), troque aqui
@@ -63,17 +66,23 @@ impl Email {
         Ok(Email(clean))
     }
 
-    pub fn as_str(&self) -> &str { &self.0 }
+    pub fn as_str(&self) -> &str {
+        &self.0
+    }
 }
 
 impl FromStr for Email {
     type Err = ErrorMessage;
-    fn from_str(s: &str) -> Result<Self, Self::Err> { Email::new(s) }
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        Email::new(s)
+    }
 }
 
 impl TryFrom<String> for Email {
     type Error = ErrorMessage;
-    fn try_from(s: String) -> Result<Self, Self::Error> { Email::new(&s) }
+    fn try_from(s: String) -> Result<Self, Self::Error> {
+        Email::new(&s)
+    }
 }
 
 impl<'de> Deserialize<'de> for Email {

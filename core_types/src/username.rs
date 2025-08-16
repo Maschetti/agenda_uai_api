@@ -19,13 +19,21 @@ impl Username {
             return Err(ErrorMessage::EmptyField { field: "username" });
         }
         if len < 3 {
-            return Err(ErrorMessage::TooShort { field: "username", min: 3 });
+            return Err(ErrorMessage::TooShort {
+                field: "username",
+                min: 3,
+            });
         }
         if len > 32 {
-            return Err(ErrorMessage::TooLong { field: "username", max: 32 });
+            return Err(ErrorMessage::TooLong {
+                field: "username",
+                max: 32,
+            });
         }
         // Apenas ASCII alfanumérico e os símbolos "._-"
-        let ok = s.chars().all(|c| c.is_ascii_alphanumeric() || "_.-".contains(c));
+        let ok = s
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || "_.-".contains(c));
         if !ok {
             return Err(ErrorMessage::InvalidChar { field: "username" });
         }
@@ -53,7 +61,9 @@ impl<'de> Deserialize<'de> for Username {
 
 impl Deref for Username {
     type Target = str;
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl Display for Username {

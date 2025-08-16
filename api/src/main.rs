@@ -1,16 +1,16 @@
 // api/src/main.rs
-use axum::{routing::get, Router};
+use axum::{Router, routing::get};
 use tokio::net::TcpListener;
 
 // ➊ declare the module (looks for src/response/mod.rs)
-mod response;
-mod extract;
-mod routes;
 mod app_state;
+mod extract;
+mod response;
+mod routes;
 use routes::users_routes;
 
 // ➋ bring types into scope
-use crate::{response::ApiResponse};
+use crate::response::ApiResponse;
 
 #[derive(serde::Serialize)]
 struct Health {

@@ -1,7 +1,7 @@
 use axum::{
+    body,
     extract::{FromRequest, Request},
     http::header::CONTENT_TYPE,
-    body,
 };
 use serde::de::DeserializeOwned;
 use serde_json::Value;

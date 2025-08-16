@@ -27,13 +27,14 @@ where
     T: Serialize,
 {
     fn into_response(self) -> Response {
-        let status = StatusCode::from_u16(self.status_code)
-            .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
+        let status =
+            StatusCode::from_u16(self.status_code).unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
 
         let body = serde_json::to_string(&self).unwrap_or_else(|_| {
             "{\"status_code\":500,\"success\":false,\"data\":null,\
               \"errors\":[{\"code\":\"SERIALIZATION_ERROR\",\
-              \"message\":\"Failed to serialize response\"}]}".to_string()
+              \"message\":\"Failed to serialize response\"}]}"
+                .to_string()
         });
 
         (status, [("Content-Type", "application/json")], body).into_response()

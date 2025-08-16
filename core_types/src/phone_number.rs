@@ -76,7 +76,9 @@ impl<'de> Deserialize<'de> for PhoneNumber {
 
 impl Deref for PhoneNumber {
     type Target = str;
-    fn deref(&self) -> &Self::Target { &self.0 }
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 impl Display for PhoneNumber {

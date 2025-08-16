@@ -1,7 +1,7 @@
 // auth.rs
 use axum::{
     extract::{FromRef, FromRequest, Request},
-    http::{header::AUTHORIZATION, StatusCode},
+    http::{StatusCode, header::AUTHORIZATION},
 };
 use serde_json::Value;
 
@@ -12,7 +12,11 @@ use infra::Claims;
 pub struct Auth(pub Claims);
 
 // helper p/ erro padronizado
-fn make_err(status: StatusCode, code: &'static str, message: impl Into<String>) -> ApiResponse<Value> {
+fn make_err(
+    status: StatusCode,
+    code: &'static str,
+    message: impl Into<String>,
+) -> ApiResponse<Value> {
     ApiResponse {
         status_code: status.as_u16(),
         success: false,
@@ -39,18 +43,31 @@ where
             .headers()
             .get(AUTHORIZATION)
             .and_then(|v| v.to_str().ok())
-            .ok_or_else(|| make_err(StatusCode::UNAUTHORIZED, "UNAUTHORIZED", "missing Authorization header"))?;
+            .ok_or_else(|| {
+                make_err(
+                    StatusCode::UNAUTHORIZED,
+                    "UNAUTHORIZED",
+                    "missing Authorization header",
+                )
+            })?;
 
         // 2) Bearer <token>
-        let token = auth
-            .strip_prefix("Bearer ")
-            .ok_or_else(|| make_err(StatusCode::UNAUTHORIZED, "UNAUTHORIZED", "expected Bearer token"))?;
+        let token = auth.strip_prefix("Bearer ").ok_or_else(|| {
+            make_err(
+                StatusCode::UNAUTHORIZED,
+                "UNAUTHORIZED",
+                "expected Bearer token",
+            )
+        })?;
 
         // 3) Verificar token
-        let claims = app_state
-            .jwt
-            .verify(token)
-            .map_err(|_| make_err(StatusCode::UNAUTHORIZED, "UNAUTHORIZED", "invalid or expired token"))?;
+        let claims = app_state.jwt.verify(token).map_err(|_| {
+            make_err(
+                StatusCode::UNAUTHORIZED,
+                "UNAUTHORIZED",
+                "invalid or expired token",
+            )
+        })?;
 
         Ok(Auth(claims))
     }
