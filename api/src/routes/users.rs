@@ -1,9 +1,13 @@
 use axum::{routing::post, Router};
-use serde::{Deserialize, Serialize};
+use domain::user::User;
+use serde::{Deserialize};
 use core_types::{Cpf, Email, Password, PhoneNumber, Status};
-use crate::extract::ValidatedJson;
 
-use crate::response::{ ApiResponse};
+use crate::{
+    app_state::AppState,    // <- seu ValidatedJson
+    ApiResponse,
+};
+use crate::extract::{ValidatedJson, Auth};
 
 #[derive(Deserialize)]
 struct CreateUserRequest {
@@ -13,19 +17,6 @@ struct CreateUserRequest {
     password: Password,
     phone_number: PhoneNumber,
     status: Status,
-}
-
-#[derive(Debug, Clone, Serialize)]
-pub struct User {
-    pub id: u32,
-    pub username: String,
-    pub cpf: Cpf,
-    pub email: Email,
-    #[serde(skip_serializing)]
-    #[allow(dead_code)] 
-    pub password: Password,
-    pub phone_number: PhoneNumber,
-    pub status: Status,
 }
 
 // Handler: POST /users
