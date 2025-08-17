@@ -6,7 +6,7 @@ use axum::{
 use serde::de::DeserializeOwned;
 use serde_json::Value;
 
-use crate::response::{ApiError, ApiResponse};
+use crate::response::response::{ApiError, ApiResponse};
 
 pub struct ValidatedJson<T>(pub T);
 
