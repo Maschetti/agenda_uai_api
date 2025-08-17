@@ -40,6 +40,7 @@ dependencies = [
  "axum",
  "core_types",
  "domain",
+ "dotenvy",
  "infra",
  "serde",
  "serde_json",
@@ -399,7 +400,6 @@ version = "0.1.0"
 dependencies = [
  "chrono",
  "domain",
- "dotenvy",
  "jsonwebtoken",
  "serde",
 ]

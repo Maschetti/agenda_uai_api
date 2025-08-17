@@ -12,3 +12,4 @@ serde_json = "1.0.142"
 tokio = { version = "1.47.1", features = ["full"] }
 core_types = { path = "../core_types" }
 async-trait = "0.1.89"
+dotenvy = "0.15.7"
