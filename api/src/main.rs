@@ -8,6 +8,7 @@ mod response;
 mod routes;
 use crate::routes::users_routes;
 use infra::JwtService;
+use infra::PasswordHasher;
 use tokio::net::TcpListener;
 
 use crate::app_state::AppState;
@@ -17,7 +18,11 @@ async fn main() {
     // carregar .env e secret
     let _ = dotenvy::dotenv();
     let secret = std::env::var("JWT_SECRET").expect("defina JWT_SECRET no .env");
-    let state = AppState::new(JwtService::new(secret.as_bytes()));
+    let password_pepper = std::env::var("PASSWORD_PEPPER").expect("defina PASSWORD_PEPPER no .env");
+    let state = AppState::new(
+        JwtService::new(secret.as_bytes()),
+        PasswordHasher::new(password_pepper.as_bytes()),
+    );
 
     // rotas públicas
     let public = Router::new().route("/", get(|| async { "Hello from API" }));

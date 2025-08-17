@@ -4,10 +4,10 @@ use crate::{
     app_state::AppState,
     extract::ValidatedJson,
     middlewares::auth::auth_middleware,
-    request::users::{CreateUserRequest, GetUserRequest},
+    request::users::{CreateUserRequest, GetUserByIdRequest, GetUserRequest},
     response::{
         response::{ApiError, ApiResponse},
-        users::CreateUserResponse,
+        users::{CreateUserResponse, GetUserByIdResponse},
     },
 };
 
@@ -17,20 +17,9 @@ async fn create_user(
     State(state): State<AppState>,
     ValidatedJson(payload): ValidatedJson<CreateUserRequest>,
 ) -> ApiResponse<CreateUserResponse> {
-    let token = match state.jwt.generate(1, &payload.username) {
-        Ok(t) => t,
-        Err(_e) => {
-            return ApiResponse {
-                status_code: 500,
-                success: false,
-                data: None,
-                errors: Some(vec![ApiError {
-                    code: "TOKEN_GENERATION_FAILED",
-                    message: "could not generate token".to_string(),
-                }]),
-            };
-        }
-    };
+    let token = state.jwt.generate(1, &payload.email.as_str())?;
+
+    let token = state.password_hasher.hash(&payload.password.as_str())?;
 
     ApiResponse {
         status_code: 201,
@@ -40,11 +29,11 @@ async fn create_user(
     }
 }
 
-async fn get_user(ValidatedJson(payload): ValidatedJson<GetUserRequest>) -> ApiResponse<User> {
+async fn get_user_by_id(ValidatedJson(payload): ValidatedJson<GetUserByIdRequest>) -> ApiResponse<GetUserByIdResponse> {
+    
     // fake persistence
     let user = User {
         id: 1,
-        username: payload.username,
         name: payload.name,
         cpf: payload.cpf,
         email: payload.email,
@@ -53,6 +42,8 @@ async fn get_user(ValidatedJson(payload): ValidatedJson<GetUserRequest>) -> ApiR
         status: payload.status,
         token: "".to_string(),
     };
+
+
 
     ApiResponse {
         status_code: 201,
@@ -67,7 +58,7 @@ pub fn routes(state: AppState) -> Router<AppState> {
     let public = Router::new().route("/users", post(create_user));
 
     let protected = Router::new()
-        .route("/get-user-auth", post(get_user))
+        .route("/users", get(get_user))
         .route_layer(middleware::from_fn_with_state(
             state.clone(),
             auth_middleware,
