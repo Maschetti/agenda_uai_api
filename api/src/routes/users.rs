@@ -2,13 +2,13 @@ use axum::{Router, extract::State, middleware, routing::post};
 
 use crate::{
     app_state::AppState,
-    auth,
     extract::ValidatedJson,
     request::users::{CreateUserRequest, GetUserRequest},
     response::{
         response::{ApiError, ApiResponse},
         users::CreateUserResponse,
     },
+    middlewares::auth::auth_middleware
 };
 
 use domain::user::User;
@@ -68,7 +68,7 @@ pub fn routes(state: AppState) -> Router<AppState> {
 
     let protected = Router::new()
         .route("/get-user-auth", post(get_user))
-        .route_layer(middleware::from_fn_with_state(state.clone(), auth));
+        .route_layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
 
     public.merge(protected).with_state(state)
 }
