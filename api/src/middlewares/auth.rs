@@ -1,4 +1,8 @@
-use axum::{extract::{State, Request}, middleware::Next, response::IntoResponse};
+use axum::{
+    extract::{Request, State},
+    middleware::Next,
+    response::IntoResponse,
+};
 use infra::Claims;
 
 use crate::app_state::AppState;
