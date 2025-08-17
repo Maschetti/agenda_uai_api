@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
     pub sub: u32,
-    pub username: String,
+    pub email: String,
     pub iat: usize,
     pub exp: usize,
 }
@@ -33,13 +33,13 @@ impl JwtService {
         self
     }
 
-    pub fn generate(&self, id: u32, username: &str) -> Result<String, jsonwebtoken::errors::Error> {
+    pub fn generate(&self, id: u32, email: &str) -> Result<String, jsonwebtoken::errors::Error> {
         let now = Utc::now();
         let exp = now + self.ttl;
 
         let claims = Claims {
             sub: id,
-            username: username.to_owned(),
+            email: email.to_owned(),
             iat: now.timestamp() as usize,
             exp: exp.timestamp() as usize,
         };
@@ -55,5 +55,15 @@ impl JwtService {
 
         let data = decode::<Claims>(token, &self.dec, &validation)?;
         Ok(data.claims)
+    }
+}
+
+impl From<JwtError> for ApiResponse<serde_json::Value> {
+    fn from(_: JwtError) -> Self {
+        ApiResponse::err(
+            StatusCode::UNAUTHORIZED,
+            "INVALID_TOKEN",
+            "invalid or expired token",
+        )
     }
 }
