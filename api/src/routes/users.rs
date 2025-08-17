@@ -1,92 +1,46 @@
-use axum::{
-    Router,
-    extract::State,
-    routing::{get, post},
-};
-use serde::{Deserialize, Serialize};
+use axum::{Router, extract::State, middleware, routing::post};
 
 use crate::{
     app_state::AppState,
-    extract::{Auth, ValidatedJson},
-    response::{ApiError, ApiResponse},
+    auth,
+    extract::ValidatedJson,
+    request::users::{CreateUserRequest, GetUserRequest},
+    response::{
+        response::{ApiError, ApiResponse},
+        users::CreateUserResponse,
+    },
 };
 
-use core_types::{Cpf, Email, Name, Password, PhoneNumber, Status, Username};
 use domain::user::User;
 
-/// ====== POST /auth/login (gera token p/ teste) ======
-#[derive(Deserialize)]
-struct LoginRequest {
-    // Mantive String para simplificar a geração do token
-    username: String,
-}
-
-#[derive(Serialize)]
-struct TokenResponse {
-    token: String,
-}
-
-async fn login(
+async fn create_user(
     State(state): State<AppState>,
-    ValidatedJson(payload): ValidatedJson<LoginRequest>,
-) -> ApiResponse<TokenResponse> {
+    ValidatedJson(payload): ValidatedJson<CreateUserRequest>,
+) -> ApiResponse<CreateUserResponse> {
     let token = match state.jwt.generate(1, &payload.username) {
         Ok(t) => t,
-        Err(_) => {
+        Err(_e) => {
             return ApiResponse {
                 status_code: 500,
                 success: false,
                 data: None,
                 errors: Some(vec![ApiError {
-                    code: "101",
-                    message: "could not generate token".into(),
+                    code: "TOKEN_GENERATION_FAILED",
+                    message: "could not generate token".to_string(),
                 }]),
             };
         }
     };
 
     ApiResponse {
-        status_code: 200,
+        status_code: 201,
         success: true,
-        data: Some(TokenResponse { token }),
+        data: Some(CreateUserResponse { token }),
         errors: None,
     }
 }
 
-/// ====== GET /users/me (protegida) ======
-#[derive(Serialize)]
-struct MeResponse {
-    id: u32,
-    username: String,
-}
-
-async fn me(Auth(claims): Auth) -> ApiResponse<MeResponse> {
-    ApiResponse {
-        status_code: 200,
-        success: true,
-        data: Some(MeResponse {
-            id: claims.sub,
-            username: claims.username,
-        }),
-        errors: None,
-    }
-}
-
-/// ====== POST /users (sem auth, exemplo com ValidatedJson) ======
-#[derive(Deserialize)]
-struct CreateUserRequest {
-    username: Username,
-    name: Name,
-    cpf: Cpf,
-    email: Email,
-    password: Password,
-    phone_number: PhoneNumber,
-    status: Option<Status>,
-}
-
-async fn create_user(
-    ValidatedJson(payload): ValidatedJson<CreateUserRequest>,
-) -> ApiResponse<User> {
+async fn get_user(ValidatedJson(payload): ValidatedJson<GetUserRequest>) -> ApiResponse<User> {
     // fake persistence
     let user = User {
         id: 1,
@@ -97,6 +51,7 @@ async fn create_user(
         password: payload.password,
         phone_number: payload.phone_number,
         status: payload.status,
+        token: "".to_string(),
     };
 
     ApiResponse {
@@ -108,9 +63,12 @@ async fn create_user(
 }
 
 /// ====== Router ======
-pub fn routes() -> Router<AppState> {
-    Router::new()
-        .route("/auth/login", post(login)) // gera token
-        .route("/users/me", get(me)) // exige Authorization: Bearer <token>
-        .route("/users", post(create_user)) // sem auth, usa ValidatedJson
+pub fn routes(state: AppState) -> Router<AppState> {
+    let public = Router::new().route("/users", post(create_user));
+
+    let protected = Router::new()
+        .route("/get-user-auth", post(get_user))
+        .route_layer(middleware::from_fn_with_state(state.clone(), auth));
+
+    public.merge(protected).with_state(state)
 }
