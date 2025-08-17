@@ -8,6 +8,7 @@ pub struct User {
     pub name: Name,
     pub cpf: Cpf,
     pub email: Email,
+    pub token: String,
     #[serde(skip_serializing)]
     #[allow(dead_code)]
     pub password: Password,
