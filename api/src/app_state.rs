@@ -1,13 +1,14 @@
 use std::sync::Arc;
+use tokio::sync::Mutex;
 
-use infra::JwtService;
-use infra::PasswordHasher;
+use domain::user::User;
+use infra::{JwtService, PasswordHasher};
 
 #[derive(Clone)]
 pub struct AppState {
     pub jwt: Arc<JwtService>,
     pub password_hasher: Arc<PasswordHasher>,
-    pub users: Arc<Vec<User>>
+    pub users: Arc<Mutex<Vec<User>>>,
 }
 
 impl AppState {
@@ -15,7 +16,7 @@ impl AppState {
         Self {
             jwt: Arc::new(jwt),
             password_hasher: Arc::new(password_hasher),
-            users: Arc::new([]),
+            users: Arc::new(Mutex::new(Vec::new())),
         }
     }
 }

@@ -13,3 +13,7 @@ tokio = { version = "1.47.1", features = ["full"] }
 core_types = { path = "../core_types" }
 async-trait = "0.1.89"
 dotenvy = "0.15.7"
+jsonwebtoken = "9.3.1"
+thiserror = "2.0.15"
+password-hash = { version = "0.5", features = ["std"] }
+argon2 = { version = "0.5.3", features = ["std"] }

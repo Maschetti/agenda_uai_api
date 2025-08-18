@@ -57,13 +57,3 @@ impl JwtService {
         Ok(data.claims)
     }
 }
-
-impl From<JwtError> for ApiResponse<serde_json::Value> {
-    fn from(_: JwtError) -> Self {
-        ApiResponse::err(
-            StatusCode::UNAUTHORIZED,
-            "INVALID_TOKEN",
-            "invalid or expired token",
-        )
-    }
-}

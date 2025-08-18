@@ -2,6 +2,7 @@ use core_types::{Cpf, Email, Name, Password, PhoneNumber, Status, Username};
 use serde::Deserialize;
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct CreateUserRequest {
     pub name: Name,
     pub cpf: Cpf,
@@ -12,11 +13,13 @@ pub struct CreateUserRequest {
 }
  
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GetUserByIdRequest {
     pub id: u32,
 }
 
 #[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub struct GetUserByEmailRequest {
     pub email: Email,
 }

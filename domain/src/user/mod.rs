@@ -10,7 +10,7 @@ pub struct User {
     pub token: String,
     #[serde(skip_serializing)]
     #[allow(dead_code)]
-    pub password: Password,
+    pub password_hash: String,
     pub phone_number: Option<PhoneNumber>,
     pub status: Status,
 }

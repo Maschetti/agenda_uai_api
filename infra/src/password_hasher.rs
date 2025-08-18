@@ -30,13 +30,3 @@ impl PasswordHasher {
         Ok(phc.to_string())
     }
 }
-
-impl From<password_hash::Error> for ApiResponse<serde_json::Value> {
-    fn from(_: password_hash::Error) -> Self {
-        ApiResponse::err(
-            StatusCode::INTERNAL_SERVER_ERROR,
-            "PASSWORD_HASH_FAILED",
-            "something went wrong with the password",
-        )
-    }
-}

@@ -1,5 +1,5 @@
 use serde::{Deserialize, Deserializer, Serialize};
-use std::str::FromStr;
+use std::{fmt, str::FromStr};
 
 use crate::ErrorMessage;
 
@@ -66,8 +66,30 @@ impl Email {
         Ok(Email(clean))
     }
 
+    pub fn into_string(self) -> String {
+        self.0
+    }
+
     pub fn as_str(&self) -> &str {
         &self.0
+    }
+}
+
+impl fmt::Display for Email {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.0)
+    }
+}
+
+impl AsRef<str> for Email {
+    fn as_ref(&self) -> &str {
+        &self.0
+    }
+}
+
+impl From<Email> for String {
+    fn from(e: Email) -> Self {
+        e.0
     }
 }
 
@@ -89,5 +111,37 @@ impl<'de> Deserialize<'de> for Email {
     fn deserialize<D: Deserializer<'de>>(d: D) -> Result<Self, D::Error> {
         let raw: String = String::deserialize(d)?;
         Email::new(&raw).map_err(|e| serde::de::Error::custom(e.to_string()))
+    }
+}
+
+impl PartialEq<Email> for Email {
+    fn eq(&self, other: &Email) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialEq<String> for Email {
+    fn eq(&self, other: &String) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialEq<&str> for Email {
+    fn eq(&self, other: &&str) -> bool {
+        self.0 == *other
+    }
+}
+
+// inverso: String == Email
+impl PartialEq<Email> for String {
+    fn eq(&self, other: &Email) -> bool {
+        *self == other.0
+    }
+}
+
+// inverso: &str == Email
+impl PartialEq<Email> for &str {
+    fn eq(&self, other: &Email) -> bool {
+        *self == other.0
     }
 }
