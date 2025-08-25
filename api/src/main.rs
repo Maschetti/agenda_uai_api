@@ -1,40 +1,24 @@
-// src/main.rs
-use axum::{Router, routing::get};
-mod app_state;
-mod extract;
-mod middlewares;
-mod request;
-mod response;
-mod routes;
-use crate::routes::users_routes;
-use infra::JwtService;
-use infra::PasswordHasher;
-use tokio::net::TcpListener;
+use user::{CreateUserDTO, UserService};
 
-use crate::app_state::AppState;
+fn main() {
+    let user_service = UserService::new();
+    let user_dto = match CreateUserDTO::new(
+        "Mateus viana Maschietto".into(),
+        "mateus@gmail.com".into(),
+        "Password123".into(),
+        "5531985470266".into(),
+        "A".into()
+    ) {
+        Ok(dto) => dto,
+        Err(errors) => {
+            eprintln!("Falha na aplicação:");
+            for error in errors {
+                eprintln!("  - {}", error);
+            }
+            return;
+        }
+    };
 
-#[tokio::main]
-async fn main() {
-    // carregar .env e secret
-    let _ = dotenvy::dotenv();
-    let secret = std::env::var("JWT_SECRET").expect("defina JWT_SECRET no .env");
-    let password_pepper = std::env::var("PASSWORD_PEPPER").expect("defina PASSWORD_PEPPER no .env");
-    let state = AppState::new(
-        JwtService::new(secret.as_bytes()),
-        PasswordHasher::new(password_pepper.as_bytes()),
-    );
-
-    // rotas públicas
-    let public = Router::new().route("/", get(|| async { "Hello from API" }));
-
-    // let protected = Router::new()
-    //     .route_layer(middleware::from_fn_with_state(state.clone(), auth_middleware));
-
-    let users = users_routes(state.clone());
-    // app final com estado compartilhado
-    let app = Router::new().merge(public).merge(users).with_state(state);
-
-    let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
-    println!("API rodando em http://localhost:3000");
-    axum::serve(listener, app).await.unwrap();
+    let user = user_service.create_user(user_dto);
+    println!("{}:{}:{}", user.name, user.email, user.status);
 }
