@@ -1,0 +1,42 @@
+{
+  "name": "agenda_uai_api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tsx watch src/server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Maschetti/agenda_uai_api.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Maschetti/agenda_uai_api/issues"
+  },
+  "homepage": "https://github.com/Maschetti/agenda_uai_api#readme",
+  "description": "",
+  "dependencies": {
+    "@prisma/client": "^6.15.0",
+    "fastify": "^5.6.0",
+    "tsx": "^4.20.5",
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.35.0",
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^24.3.1",
+    "eslint": "^9.35.0",
+    "globals": "^16.3.0",
+    "jiti": "^2.5.1",
+    "prisma": "^6.15.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2",
+    "typescript-eslint": "^8.42.0"
+  }
+}
